@@ -1,0 +1,27 @@
+[alias]
+	cap = "!f() { git add . && git commit -m \"$1\" && git push; }; f"
+	can = "!f() { git add . && git commit --amend --no-edit; }; f"
+	st = status
+	branches = branch -a
+	rebase-main = pull --rebase origin main
+	rc = "!f() { git add . && git rebase --continue; }; f"
+	pfl = push --force-with-lease
+	car = "!f() { git add . && git commit -m \"$1\" && git pull origin main --rebase; }; f"
+	smart-squash = "!f() { git fetch origin main:main && COUNT=$(git rev-list --count HEAD ^main); echo \"This will squash $COUNT commits. Continue? [y/N]\"; read answer; if [ \"$answer\" = \"y\" ]; then git reset --soft HEAD~$COUNT && git commit --edit -m\"$(git log --format=%B --reverse HEAD..HEAD@{1})\"; else echo \"Squash canceled\"; fi; }; f"
+	prune-branches = "!f() { BRANCHES=$(git branch | grep -v \"main\"); LOCAL_COUNT=$(echo \"$BRANCHES\" | grep -v '^$' | wc -l); REMOTE_COUNT=$(git remote prune origin --dry-run 2>&1 | grep -c 'origin/'); if [ $LOCAL_COUNT -eq 0 ] && [ $REMOTE_COUNT -eq 0 ]; then echo \"No branches to delete\"; exit 0; fi; echo \"This will delete $LOCAL_COUNT local branch(es) and $REMOTE_COUNT pointer(s) to stale remote branches.\"; if [ $LOCAL_COUNT -gt 0 ]; then echo \"Local branches:\"; echo \"$BRANCHES\"; fi; echo \"Continue? [y/N]\"; read answer; if [ \"$answer\" = \"y\" ]; then if [ $LOCAL_COUNT -gt 0 ]; then echo \"$BRANCHES\" | xargs git branch -D; fi; git fetch --prune; echo \"Done\"; else echo \"Prune canceled\"; fi; }; f"
+[credential "https://github.com"]
+	helper =
+	helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !gh auth git-credential
+[user]
+	email = frederik@twig.energy
+	name = Frederik Svane
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[init]
+	defaultBranch = main

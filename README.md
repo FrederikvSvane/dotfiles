@@ -8,13 +8,17 @@ curl -fsSL https://raw.githubusercontent.com/FrederikvSvane/dotfiles/main/setup.
 
 The script:
 
-1. Installs zsh, git, curl, and gh (apt, dnf, pacman, or brew).
+1. Installs zsh, git, curl, GNU Screen, and gh (apt, dnf, pacman, or brew).
 2. Installs oh-my-zsh.
 3. Installs powerlevel10k, zsh-autosuggestions, and zsh-syntax-highlighting.
-4. Downloads `.zshrc`, `.p10k.zsh`, and `.gitconfig` from this repo. Existing files are backed up first (`.bak.<timestamp>`).
+4. Downloads `.zshrc`, `.p10k.zsh`, `.gitconfig`, and `.screenrc` from this repo. Existing files are backed up first (`.bak.<timestamp>`).
 5. Sets zsh as the default shell.
 
 Safe to re-run.
+
+GNU Screen automatically reads `~/.screenrc` when a new session starts. The
+included configuration keeps 10,000 lines of history and enables native
+terminal scrolling for xterm-compatible terminals.
 
 ## After setup
 

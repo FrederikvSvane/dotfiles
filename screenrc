@@ -1,0 +1,6 @@
+# Keep enough history for Screen copy mode (Ctrl-A, then Esc).
+defscrollback 10000
+
+# Keep xterm-compatible terminals on their normal buffer so terminal-native
+# scrolling, including a macOS trackpad in VS Code, works inside Screen.
+termcapinfo xterm* ti@:te@

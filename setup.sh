@@ -14,20 +14,20 @@ ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 log() { printf '\n==> %s\n' "$1"; }
 
 # --- packages ---------------------------------------------------------------
-log "Installing zsh, git, curl"
+log "Installing zsh, git, curl, screen, and gh"
 if command -v apt-get >/dev/null 2>&1; then
     sudo apt-get update -qq
-    sudo apt-get install -y zsh git curl
+    sudo apt-get install -y zsh git curl screen
     sudo apt-get install -y gh 2>/dev/null || echo "gh not in apt repos; install manually: https://github.com/cli/cli/blob/trunk/docs/install_linux.md"
 elif command -v dnf >/dev/null 2>&1; then
-    sudo dnf install -y zsh git curl
+    sudo dnf install -y zsh git curl screen
     sudo dnf install -y gh 2>/dev/null || echo "gh not in dnf repos; install manually"
 elif command -v pacman >/dev/null 2>&1; then
-    sudo pacman -S --needed --noconfirm zsh git curl github-cli
+    sudo pacman -S --needed --noconfirm zsh git curl screen github-cli
 elif command -v brew >/dev/null 2>&1; then
-    brew install zsh gh
+    brew install zsh gh screen
 else
-    echo "No supported package manager found. Install zsh, git, curl and gh yourself, then re-run." >&2
+    echo "No supported package manager found. Install zsh, git, curl, screen, and gh yourself, then re-run." >&2
     exit 1
 fi
 
@@ -68,6 +68,7 @@ fetch_config() {
 fetch_config zshrc     .zshrc
 fetch_config p10k.zsh  .p10k.zsh
 fetch_config gitconfig .gitconfig
+fetch_config screenrc  .screenrc
 
 # --- default shell ----------------------------------------------------------
 ZSH_PATH="$(command -v zsh)"

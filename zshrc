@@ -116,6 +116,7 @@ source $ZSH/oh-my-zsh.sh
 # opencode
 export PATH=$HOME/.opencode/bin:$PATH
 export PATH="$HOME/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 export VCPKG_BINARY_SOURCES="files,/opt/vcpkg-binary-cache/,read"
 # set the ip and port of ollama to the tailscale exposed inference service (for twig-agents)
 export OLLAMA_HOST=100.72.34.124:11434

@@ -107,21 +107,21 @@ install_user_tools() {
 }
 
 if [ "$MODE" = root ]; then
-    log "Installing zsh, git, curl, screen, and gh"
+    log "Installing zsh, git, curl, screen, tmux, and gh"
     if command -v apt-get >/dev/null 2>&1; then
         $SUDO apt-get update -qq
-        $SUDO apt-get install -y zsh git curl screen ripgrep fd-find fzf build-essential unzip
+        $SUDO apt-get install -y zsh git curl screen tmux ripgrep fd-find fzf build-essential unzip
         $SUDO apt-get install -y lazygit 2>/dev/null || true
         $SUDO apt-get install -y gh 2>/dev/null || echo "gh not in apt repos; install manually: https://github.com/cli/cli/blob/trunk/docs/install_linux.md"
     elif command -v dnf >/dev/null 2>&1; then
-        $SUDO dnf install -y zsh git curl screen ripgrep fd-find fzf gcc make unzip
+        $SUDO dnf install -y zsh git curl screen tmux ripgrep fd-find fzf gcc make unzip
         $SUDO dnf install -y gh 2>/dev/null || echo "gh not in dnf repos; install manually"
     elif command -v pacman >/dev/null 2>&1; then
-        $SUDO pacman -S --needed --noconfirm zsh git curl screen github-cli neovim ripgrep fd fzf lazygit base-devel unzip
+        $SUDO pacman -S --needed --noconfirm zsh git curl screen tmux github-cli neovim ripgrep fd fzf lazygit base-devel unzip
     elif command -v brew >/dev/null 2>&1; then
-        brew install zsh gh screen neovim ripgrep fd fzf lazygit
+        brew install zsh gh screen tmux neovim ripgrep fd fzf lazygit
     else
-        echo "No supported package manager found. Install zsh, git, curl, screen, and gh yourself, then re-run." >&2
+        echo "No supported package manager found. Install zsh, git, curl, screen, tmux, and gh yourself, then re-run." >&2
         exit 1
     fi
 else
@@ -151,6 +151,7 @@ else
     fi
 
     command -v screen >/dev/null 2>&1 || echo "screen is not installed and needs root to install; skipping."
+    command -v tmux >/dev/null 2>&1 || echo "tmux is not installed and needs root to install; ~/.tmux.conf is still set up for when it is."
 fi
 
 # --- neovim -----------------------------------------------------------------
@@ -208,6 +209,7 @@ fetch_config zshrc     .zshrc
 fetch_config p10k.zsh  .p10k.zsh
 fetch_config gitconfig .gitconfig
 fetch_config screenrc  .screenrc
+fetch_config tmux.conf .tmux.conf
 
 # --- nvim config (LazyVim + catppuccin) -------------------------------------
 # A whole directory, so clone the repo instead of fetching file by file.

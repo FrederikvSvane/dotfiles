@@ -8,16 +8,16 @@ curl -fsSL https://raw.githubusercontent.com/FrederikvSvane/dotfiles/main/setup.
 
 The script:
 
-1. Installs zsh, git, curl, GNU Screen, and gh (apt, dnf, pacman, or brew).
+1. Installs zsh, git, curl, GNU Screen, tmux, and gh (apt, dnf, pacman, or brew).
    Without root (not root and no sudo), it instead installs zsh
    ([zsh-bin](https://github.com/romkatv/zsh-bin)) and gh into `~/.local`. git
-   and curl must already be present, and Screen is skipped if missing.
+   and curl must already be present, and Screen and tmux are skipped if missing.
 2. Installs oh-my-zsh.
 3. Installs powerlevel10k, zsh-autosuggestions, and zsh-syntax-highlighting.
 4. Installs Neovim (>= 0.11) plus ripgrep, fd and lazygit for LazyVim. With root
    it uses the package manager and `/opt/nvim`; without root everything goes to
    `~/.local`.
-5. Downloads `.zshrc`, `.p10k.zsh`, `.gitconfig`, and `.screenrc` from this repo. Existing files are backed up first (`.bak.<timestamp>`).
+5. Downloads `.zshrc`, `.p10k.zsh`, `.gitconfig`, and `.screenrc`, and `.tmux.conf` from this repo. Existing files are backed up first (`.bak.<timestamp>`).
 6. Installs the LazyVim + Catppuccin config from `nvim/` to `~/.config/nvim`
    and restores the plugins pinned in `lazy-lock.json`.
 7. Sets zsh as the default shell. Without root, if `chsh` isn't possible, it
@@ -43,3 +43,22 @@ the command menu. `:LazyExtras` toggles language support.
 Edit root-owned files with `sudoedit <file>` (alias `svim`), which runs your own
 nvim config and only escalates the save. Plain `sudo nvim` may use root's empty
 config depending on the system's `HOME` handling.
+
+## tmux
+
+Mouse and trackpad scrolling work out of the box (scroll up enters copy mode),
+with 50k lines of history, true colour and Catppuccin mocha colours. The prefix
+is still `Ctrl-b`.
+
+| Key | Action |
+|---|---|
+| `prefix` `\|` / `-` | Split right / down (keeps current directory) |
+| `Alt` + arrows | Move between panes, no prefix |
+| `Shift` + left/right | Previous / next window, no prefix |
+| `prefix` `H J K L` | Resize panes |
+| `prefix` `Enter` | Copy mode (vi keys; `v` select, `y` copy) |
+| `prefix` `r` | Reload config |
+
+Dragging with the mouse selects and copies to the system clipboard (OSC 52, so it
+also works over ssh in terminals that allow it). On macOS Terminal.app, Alt+arrows
+need "Use Option as Meta key" enabled.

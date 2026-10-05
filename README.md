@@ -39,7 +39,8 @@ terminal scrolling for xterm-compatible terminals.
 ## Neovim
 
 LazyVim with Catppuccin (mocha). Arrow keys and mouse work; press `<space>` for
-the command menu. `:LazyExtras` toggles language support.
+the command menu. `:LazyExtras` toggles language support. `<space>gv` opens diffview (side-by-side
+review of the whole working tree), `<space>gV` closes it.
 
 Edit root-owned files with `sudoedit <file>` (alias `svim`), which runs your own
 nvim config and only escalates the save. Plain `sudo nvim` may use root's empty

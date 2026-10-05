@@ -80,7 +80,7 @@ install_nvim_release() { # $1 = install prefix for the unpacked tree, $2 = bin d
     rm -rf "$tmp"
 }
 
-# Single-binary tools from GitHub releases into ~/.local/bin (user mode only).
+# Single-binary tools from GitHub releases into ~/.local/bin; skips anything already installed.
 install_user_tools() {
     case "$(uname -s)-$(uname -m)" in
         Linux-x86_64)               a=x86_64; rg_t=x86_64-unknown-linux-musl;  lg_a=x86_64 ;;
@@ -166,9 +166,10 @@ else
         install_nvim_release "$HOME/.local/nvim" "$HOME/.local/bin" || echo "Could not install nvim automatically."
     fi
 fi
-if [ "$MODE" = user ]; then
-    install_user_tools
-fi
+# Fill in whatever the package manager lacked (e.g. lazygit on Ubuntu) per-user.
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
+install_user_tools
 command -v cc >/dev/null 2>&1 || echo "No C compiler found; nvim-treesitter needs one (gcc/clang) to build parsers."
 
 # --- oh-my-zsh --------------------------------------------------------------
@@ -224,7 +225,14 @@ if git clone --depth=1 https://github.com/FrederikvSvane/dotfiles.git "$tmp/dotf
     cp -R "$tmp/dotfiles/nvim" "$NVIM_DIR"
     if command -v nvim >/dev/null 2>&1; then
         log "Installing nvim plugins (pinned by lazy-lock.json)"
-        nvim --headless "+Lazy! restore" +qa 2>&1 || echo "Plugin install failed; it will retry on first nvim launch."
+        # Output is noisy (colour codes, progress), so keep it in a log. Language
+        # servers and parsers finish installing in the background on first launch.
+        NVIM_LOG="$(mktemp)"
+        if nvim --headless "+Lazy! restore" +qa >"$NVIM_LOG" 2>&1 </dev/null; then
+            echo "Plugins installed."
+        else
+            echo "Plugin install did not finish (log: $NVIM_LOG); it will complete on first nvim launch."
+        fi
     fi
 else
     echo "Could not clone dotfiles; skipping nvim config."

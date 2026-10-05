@@ -127,4 +127,14 @@ if command -v nvim >/dev/null 2>&1; then
   export EDITOR=nvim VISUAL=nvim SUDO_EDITOR=nvim
   alias vim=nvim vi=nvim
   alias svim=sudoedit
+  # `sudo nvim file` would load root's (empty) config and leave root-owned state in
+  # your home, so route it through sudoedit, which runs nvim as you.
+  sudo() {
+    if [[ $# -ge 2 && $1 == (nvim|vim|vi) ]]; then
+      shift
+      command sudoedit "$@"
+    else
+      command sudo "$@"
+    fi
+  }
 fi

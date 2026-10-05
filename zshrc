@@ -138,3 +138,14 @@ if command -v nvim >/dev/null 2>&1; then
     fi
   }
 fi
+
+# Diffs render side-by-side via delta. Narrow screens (laptop): `diffmode inline`
+# for the session, or `gdi` for a single inline `git diff`.
+diffmode() {
+  case $1 in
+    inline) export DELTA_FEATURES=inline ;;
+    side)   unset DELTA_FEATURES ;;
+    *)      echo "usage: diffmode inline|side" >&2; return 1 ;;
+  esac
+}
+gdi() { DELTA_FEATURES=inline git diff "$@"; }

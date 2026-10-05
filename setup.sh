@@ -85,7 +85,7 @@ install_user_tools() {
     case "$(uname -s)-$(uname -m)" in
         Linux-x86_64)               a=x86_64; rg_t=x86_64-unknown-linux-musl;  lg_a=x86_64 ;;
         Linux-aarch64|Linux-arm64)  a=aarch64; rg_t=aarch64-unknown-linux-gnu; lg_a=arm64 ;;
-        *) echo "Skipping ripgrep/fd/lazygit (no prebuilt binaries for $(uname -sm))"; return ;;
+        *) echo "Skipping ripgrep/fd/lazygit/delta (no prebuilt binaries for $(uname -sm))"; return ;;
     esac
     tmp="$(mktemp -d)"
     if ! command -v rg >/dev/null 2>&1 && v="$(latest_tag BurntSushi/ripgrep)" && [ -n "$v" ]; then
@@ -97,6 +97,11 @@ install_user_tools() {
         log "Installing fd"
         curl -fsSL "https://github.com/sharkdp/fd/releases/download/v$v/fd-v$v-$a-unknown-linux-gnu.tar.gz" | tar -xz -C "$tmp" &&
             cp "$tmp"/fd-*/fd "$HOME/.local/bin/fd" || echo "fd install failed"
+    fi
+    if ! command -v delta >/dev/null 2>&1 && v="$(latest_tag dandavison/delta)" && [ -n "$v" ]; then
+        log "Installing delta"
+        curl -fsSL "https://github.com/dandavison/delta/releases/download/$v/delta-$v-$rg_t.tar.gz" | tar -xz -C "$tmp" &&
+            cp "$tmp"/delta-*/delta "$HOME/.local/bin/delta" || echo "delta install failed"
     fi
     if ! command -v lazygit >/dev/null 2>&1 && v="$(latest_tag jesseduffield/lazygit)" && [ -n "$v" ]; then
         log "Installing lazygit"
@@ -111,15 +116,16 @@ if [ "$MODE" = root ]; then
     if command -v apt-get >/dev/null 2>&1; then
         $SUDO apt-get update -qq
         $SUDO apt-get install -y zsh git curl screen tmux ripgrep fd-find fzf build-essential unzip
-        $SUDO apt-get install -y lazygit 2>/dev/null || true
+        $SUDO apt-get install -y lazygit git-delta 2>/dev/null || true
         $SUDO apt-get install -y gh 2>/dev/null || echo "gh not in apt repos; install manually: https://github.com/cli/cli/blob/trunk/docs/install_linux.md"
     elif command -v dnf >/dev/null 2>&1; then
         $SUDO dnf install -y zsh git curl screen tmux ripgrep fd-find fzf gcc make unzip
+        $SUDO dnf install -y git-delta 2>/dev/null || true
         $SUDO dnf install -y gh 2>/dev/null || echo "gh not in dnf repos; install manually"
     elif command -v pacman >/dev/null 2>&1; then
-        $SUDO pacman -S --needed --noconfirm zsh git curl screen tmux github-cli neovim ripgrep fd fzf lazygit base-devel unzip
+        $SUDO pacman -S --needed --noconfirm zsh git curl screen tmux github-cli neovim ripgrep fd fzf lazygit git-delta base-devel unzip
     elif command -v brew >/dev/null 2>&1; then
-        brew install zsh gh screen tmux neovim ripgrep fd fzf lazygit
+        brew install zsh gh screen tmux neovim ripgrep fd fzf lazygit git-delta
     else
         echo "No supported package manager found. Install zsh, git, curl, screen, tmux, and gh yourself, then re-run." >&2
         exit 1

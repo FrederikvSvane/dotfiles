@@ -25,3 +25,17 @@
 	required = true
 [init]
 	defaultBranch = main
+[core]
+	# delta when installed, plain less otherwise, so git never breaks without it
+	pager = "if command -v delta >/dev/null 2>&1; then delta; else less; fi"
+[delta]
+	navigate = true
+	line-numbers = true
+	features = side-by-side
+[delta "side-by-side"]
+	side-by-side = true
+[delta "inline"]
+	# selected with DELTA_FEATURES=inline (see diffmode/gdi in zshrc)
+	side-by-side = false
+[diff]
+	colorMoved = default

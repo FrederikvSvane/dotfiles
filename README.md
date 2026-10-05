@@ -14,7 +14,7 @@ The script:
    and curl must already be present, and Screen and tmux are skipped if missing.
 2. Installs oh-my-zsh.
 3. Installs powerlevel10k, zsh-autosuggestions, and zsh-syntax-highlighting.
-4. Installs Neovim (>= 0.11) plus ripgrep, fd and lazygit for LazyVim. With root
+4. Installs Neovim (>= 0.11) plus ripgrep, fd, lazygit and delta for LazyVim and git. With root
    it uses the package manager and `/opt/nvim`; without root everything goes to
    `~/.local`.
 5. Downloads `.zshrc`, `.p10k.zsh`, `.gitconfig`, and `.screenrc`, and `.tmux.conf` from this repo. Existing files are backed up first (`.bak.<timestamp>`).
@@ -63,3 +63,10 @@ is still `Ctrl-b`.
 Dragging with the mouse selects and copies to the system clipboard (OSC 52, so it
 also works over ssh in terminals that allow it). On macOS Terminal.app, Alt+arrows
 need "Use Option as Meta key" enabled.
+
+## Git diffs (delta)
+
+`git diff`, `git show` and `git log -p` go through [delta](https://github.com/dandavison/delta),
+side-by-side by default (`n`/`N` jump between files). On a narrow screen, run
+`diffmode inline` for the session (`diffmode side` to go back), or `gdi` for a
+single inline `git diff`. Without delta installed, git falls back to plain `less`.

@@ -120,3 +120,11 @@ export PATH="$HOME/.local/bin:$PATH"
 export VCPKG_BINARY_SOURCES="files,/opt/vcpkg-binary-cache/,read"
 # set the ip and port of ollama to the tailscale exposed inference service (for twig-agents)
 export OLLAMA_HOST=100.72.34.124:11434
+
+# Editor: nvim (LazyVim) when available. SUDO_EDITOR makes `sudoedit file` / `sudo -e file`
+# open your own nvim config (editing runs as you, only the save is privileged).
+if command -v nvim >/dev/null 2>&1; then
+  export EDITOR=nvim VISUAL=nvim SUDO_EDITOR=nvim
+  alias vim=nvim vi=nvim
+  alias svim=sudoedit
+fi

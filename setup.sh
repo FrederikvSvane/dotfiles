@@ -49,19 +49,77 @@ install_gh_user() {
     rm -rf "$tmp"
 }
 
+# --- neovim + LazyVim tooling ----------------------------------------------
+# Latest GitHub release tag without the leading "v".
+latest_tag() {
+    curl -fsSL "https://api.github.com/repos/$1/releases/latest" |
+        sed -n 's/.*"tag_name": *"v\{0,1\}\([^"]*\)".*/\1/p' | head -n1
+}
+
+# LazyVim needs nvim >= 0.11, which distro packages often lack.
+# In root mode $SUDO is "sudo" (or empty when already root), so the install helpers use it directly.
+nvim_ok() {
+    command -v nvim >/dev/null 2>&1 &&
+        nvim --headless '+if !has("nvim-0.11") | cquit 1 | endif' +qa >/dev/null 2>&1
+}
+
+install_nvim_release() { # $1 = install prefix for the unpacked tree, $2 = bin dir
+    case "$(uname -s)-$(uname -m)" in
+        Linux-x86_64)               asset=nvim-linux-x86_64 ;;
+        Linux-aarch64|Linux-arm64)  asset=nvim-linux-arm64 ;;
+        Darwin-arm64)               asset=nvim-macos-arm64 ;;
+        Darwin-x86_64)              asset=nvim-macos-x86_64 ;;
+        *) echo "No nvim binary for $(uname -sm); install manually: https://github.com/neovim/neovim/releases"; return 1 ;;
+    esac
+    tmp="$(mktemp -d)"
+    curl -fsSL "https://github.com/neovim/neovim/releases/latest/download/$asset.tar.gz" | tar -xz -C "$tmp" || { rm -rf "$tmp"; return 1; }
+    $SUDO rm -rf "$1"
+    $SUDO mkdir -p "$(dirname "$1")" "$2"
+    $SUDO mv "$tmp/$asset" "$1"
+    $SUDO ln -sf "$1/bin/nvim" "$2/nvim"
+    rm -rf "$tmp"
+}
+
+# Single-binary tools from GitHub releases into ~/.local/bin (user mode only).
+install_user_tools() {
+    case "$(uname -s)-$(uname -m)" in
+        Linux-x86_64)               a=x86_64; rg_t=x86_64-unknown-linux-musl;  lg_a=x86_64 ;;
+        Linux-aarch64|Linux-arm64)  a=aarch64; rg_t=aarch64-unknown-linux-gnu; lg_a=arm64 ;;
+        *) echo "Skipping ripgrep/fd/lazygit (no prebuilt binaries for $(uname -sm))"; return ;;
+    esac
+    tmp="$(mktemp -d)"
+    if ! command -v rg >/dev/null 2>&1 && v="$(latest_tag BurntSushi/ripgrep)" && [ -n "$v" ]; then
+        log "Installing ripgrep"
+        curl -fsSL "https://github.com/BurntSushi/ripgrep/releases/download/$v/ripgrep-$v-$rg_t.tar.gz" | tar -xz -C "$tmp" &&
+            cp "$tmp"/ripgrep-*/rg "$HOME/.local/bin/rg" || echo "ripgrep install failed"
+    fi
+    if ! command -v fd >/dev/null 2>&1 && ! command -v fdfind >/dev/null 2>&1 && v="$(latest_tag sharkdp/fd)" && [ -n "$v" ]; then
+        log "Installing fd"
+        curl -fsSL "https://github.com/sharkdp/fd/releases/download/v$v/fd-v$v-$a-unknown-linux-gnu.tar.gz" | tar -xz -C "$tmp" &&
+            cp "$tmp"/fd-*/fd "$HOME/.local/bin/fd" || echo "fd install failed"
+    fi
+    if ! command -v lazygit >/dev/null 2>&1 && v="$(latest_tag jesseduffield/lazygit)" && [ -n "$v" ]; then
+        log "Installing lazygit"
+        curl -fsSL "https://github.com/jesseduffield/lazygit/releases/download/v$v/lazygit_${v}_Linux_$lg_a.tar.gz" | tar -xz -C "$tmp" lazygit &&
+            cp "$tmp/lazygit" "$HOME/.local/bin/lazygit" || echo "lazygit install failed"
+    fi
+    rm -rf "$tmp"
+}
+
 if [ "$MODE" = root ]; then
     log "Installing zsh, git, curl, screen, and gh"
     if command -v apt-get >/dev/null 2>&1; then
         $SUDO apt-get update -qq
-        $SUDO apt-get install -y zsh git curl screen
+        $SUDO apt-get install -y zsh git curl screen ripgrep fd-find fzf build-essential unzip
+        $SUDO apt-get install -y lazygit 2>/dev/null || true
         $SUDO apt-get install -y gh 2>/dev/null || echo "gh not in apt repos; install manually: https://github.com/cli/cli/blob/trunk/docs/install_linux.md"
     elif command -v dnf >/dev/null 2>&1; then
-        $SUDO dnf install -y zsh git curl screen
+        $SUDO dnf install -y zsh git curl screen ripgrep fd-find fzf gcc make unzip
         $SUDO dnf install -y gh 2>/dev/null || echo "gh not in dnf repos; install manually"
     elif command -v pacman >/dev/null 2>&1; then
-        $SUDO pacman -S --needed --noconfirm zsh git curl screen github-cli
+        $SUDO pacman -S --needed --noconfirm zsh git curl screen github-cli neovim ripgrep fd fzf lazygit base-devel unzip
     elif command -v brew >/dev/null 2>&1; then
-        brew install zsh gh screen
+        brew install zsh gh screen neovim ripgrep fd fzf lazygit
     else
         echo "No supported package manager found. Install zsh, git, curl, screen, and gh yourself, then re-run." >&2
         exit 1
@@ -94,6 +152,23 @@ else
 
     command -v screen >/dev/null 2>&1 || echo "screen is not installed and needs root to install; skipping."
 fi
+
+# --- neovim -----------------------------------------------------------------
+if nvim_ok; then
+    log "nvim already installed (>= 0.11)"
+else
+    log "Installing neovim"
+    if [ "$MODE" = root ]; then
+        # Root mode: system-wide in /opt/nvim, linked into /usr/local/bin.
+        install_nvim_release /opt/nvim /usr/local/bin || echo "Could not install nvim >= 0.11 automatically."
+    else
+        install_nvim_release "$HOME/.local/nvim" "$HOME/.local/bin" || echo "Could not install nvim automatically."
+    fi
+fi
+if [ "$MODE" = user ]; then
+    install_user_tools
+fi
+command -v cc >/dev/null 2>&1 || echo "No C compiler found; nvim-treesitter needs one (gcc/clang) to build parsers."
 
 # --- oh-my-zsh --------------------------------------------------------------
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -134,6 +209,26 @@ fetch_config p10k.zsh  .p10k.zsh
 fetch_config gitconfig .gitconfig
 fetch_config screenrc  .screenrc
 
+# --- nvim config (LazyVim + catppuccin) -------------------------------------
+# A whole directory, so clone the repo instead of fetching file by file.
+NVIM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
+tmp="$(mktemp -d)"
+if git clone --depth=1 https://github.com/FrederikvSvane/dotfiles.git "$tmp/dotfiles"; then
+    if [ -e "$NVIM_DIR" ]; then
+        mv "$NVIM_DIR" "$NVIM_DIR.bak.$(date +%Y%m%d%H%M%S)"
+        log "Backed up existing nvim config"
+    fi
+    mkdir -p "$(dirname "$NVIM_DIR")"
+    cp -R "$tmp/dotfiles/nvim" "$NVIM_DIR"
+    if command -v nvim >/dev/null 2>&1; then
+        log "Installing nvim plugins (pinned by lazy-lock.json)"
+        nvim --headless "+Lazy! restore" +qa 2>&1 || echo "Plugin install failed; it will retry on first nvim launch."
+    fi
+else
+    echo "Could not clone dotfiles; skipping nvim config."
+fi
+rm -rf "$tmp"
+
 # --- default shell ----------------------------------------------------------
 ZSH_PATH="$(command -v zsh)"
 BASHRC_MARKER="# dotfiles: start zsh"
@@ -167,4 +262,5 @@ log "Done. Remaining manual steps:"
 echo "  1. Run 'gh auth login' so the git credential helper works."
 echo "  2. If the prompt shows broken symbols, install the MesloLGS NF font in the"
 echo "     terminal you are connecting FROM: https://github.com/romkatv/powerlevel10k#fonts"
-echo "  3. Log out and back in (or run 'exec zsh') to start using zsh."
+echo "  3. Install a Nerd Font (e.g. JetBrainsMono Nerd Font) in your terminal for nvim icons."
+echo "  4. Log out and back in (or run 'exec zsh') to start using zsh."

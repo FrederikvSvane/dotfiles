@@ -23,7 +23,8 @@ The script:
 7. Sets zsh as the default shell. Without root, if `chsh` isn't possible, it
    adds a snippet to `~/.bashrc` that starts zsh instead.
 
-Safe to re-run.
+Safe to re-run: anything already installed is skipped, and a config file is only
+backed up and replaced when it differs from the repo's version.
 
 GNU Screen automatically reads `~/.screenrc` when a new session starts. The
 included configuration keeps 10,000 lines of history and enables native

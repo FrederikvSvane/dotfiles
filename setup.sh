@@ -198,13 +198,20 @@ clone_if_missing https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUST
 fetch_config() {
     src="$RAW/$1"
     dest="$HOME/$2"
+    new="$(mktemp)"
+    curl -fsSL "$src" -o "$new"
+    if [ -f "$dest" ] && cmp -s "$new" "$dest"; then
+        log "$2 already up to date"
+        rm -f "$new"
+        return
+    fi
     if [ -f "$dest" ]; then
         cp "$dest" "$dest.bak.$(date +%Y%m%d%H%M%S)"
-        log "Backed up existing $2, downloading new one"
+        log "Backed up existing $2, installing new one"
     else
-        log "Downloading $2"
+        log "Installing $2"
     fi
-    curl -fsSL "$src" -o "$dest"
+    mv "$new" "$dest"
 }
 fetch_config zshrc     .zshrc
 fetch_config p10k.zsh  .p10k.zsh
@@ -217,13 +224,19 @@ fetch_config tmux.conf .tmux.conf
 NVIM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 tmp="$(mktemp -d)"
 if git clone --depth=1 https://github.com/FrederikvSvane/dotfiles.git "$tmp/dotfiles"; then
-    if [ -e "$NVIM_DIR" ]; then
-        mv "$NVIM_DIR" "$NVIM_DIR.bak.$(date +%Y%m%d%H%M%S)"
-        log "Backed up existing nvim config"
+    if [ -L "$NVIM_DIR" ]; then
+        log "$NVIM_DIR is a symlink (probably to a checkout of this repo); leaving it alone"
+    elif [ -d "$NVIM_DIR" ] && diff -r "$tmp/dotfiles/nvim" "$NVIM_DIR" >/dev/null 2>&1; then
+        log "nvim config already up to date"
+    else
+        if [ -e "$NVIM_DIR" ]; then
+            mv "$NVIM_DIR" "$NVIM_DIR.bak.$(date +%Y%m%d%H%M%S)"
+            log "Backed up existing nvim config"
+        fi
+        mkdir -p "$(dirname "$NVIM_DIR")"
+        cp -R "$tmp/dotfiles/nvim" "$NVIM_DIR"
     fi
-    mkdir -p "$(dirname "$NVIM_DIR")"
-    cp -R "$tmp/dotfiles/nvim" "$NVIM_DIR"
-    if command -v nvim >/dev/null 2>&1; then
+    if command -v nvim >/dev/null 2>&1 && [ ! -L "$NVIM_DIR" ]; then
         log "Installing nvim plugins (pinned by lazy-lock.json)"
         # Output is noisy (colour codes, progress), so keep it in a log. Language
         # servers and parsers finish installing in the background on first launch.

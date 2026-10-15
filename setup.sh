@@ -205,6 +205,7 @@ fetch_config() {
     src="$RAW/$1"
     dest="$HOME/$2"
     new="$(mktemp)"
+    mkdir -p "$(dirname "$dest")"
     curl -fsSL "$src" -o "$new"
     if [ -f "$dest" ] && cmp -s "$new" "$dest"; then
         log "$2 already up to date"
@@ -224,6 +225,11 @@ fetch_config p10k.zsh  .p10k.zsh
 fetch_config gitconfig .gitconfig
 fetch_config screenrc  .screenrc
 fetch_config tmux.conf .tmux.conf
+# kitty is a desktop terminal: only configure it where it is installed (or
+# its config dir already exists), never on a bare server.
+if command -v kitty >/dev/null 2>&1 || [ -d "/Applications/kitty.app" ] || [ -d "${XDG_CONFIG_HOME:-$HOME/.config}/kitty" ]; then
+    fetch_config kitty/kitty.conf ".config/kitty/kitty.conf"
+fi
 
 # --- nvim config (LazyVim + catppuccin) -------------------------------------
 # A whole directory, so clone the repo instead of fetching file by file.

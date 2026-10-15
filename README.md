@@ -17,7 +17,8 @@ The script:
 4. Installs Neovim (>= 0.11) plus ripgrep, fd, lazygit and delta for LazyVim and git. With root
    it uses the package manager and `/opt/nvim`; without root everything goes to
    `~/.local`.
-5. Downloads `.zshrc`, `.p10k.zsh`, `.gitconfig`, and `.screenrc`, and `.tmux.conf` from this repo. Existing files are backed up first (`.bak.<timestamp>`).
+5. Downloads `.zshrc`, `.p10k.zsh`, `.gitconfig`, `.screenrc`, and `.tmux.conf` from this repo, plus
+   `~/.config/kitty/kitty.conf` when kitty is installed. Existing files are backed up first (`.bak.<timestamp>`).
 6. Installs the LazyVim + Catppuccin config from `nvim/` to `~/.config/nvim`
    and restores the plugins pinned in `lazy-lock.json`.
 7. Sets zsh as the default shell. Without root, if `chsh` isn't possible, it
@@ -71,3 +72,23 @@ need "Use Option as Meta key" enabled.
 side-by-side by default (`n`/`N` jump between files). On a narrow screen, run
 `diffmode inline` for the session (`diffmode side` to go back), or `gdi` for a
 single inline `git diff`. Without delta installed, git falls back to plain `less`.
+
+## kitty
+
+Catppuccin mocha, MesloLGS NF 13, block cursor, tabs on top. Installed to
+`~/.config/kitty/kitty.conf` only when kitty is present. `cmd+shift+r` reloads it.
+
+| Key | Action |
+|---|---|
+| `opt+cmd+\|` / `opt+cmd+-` | Split vertically / horizontally (current directory) |
+| `cmd+d` / `cmd+shift+d` | Same splits, iTerm style |
+| `cmd+alt+` arrows | Move between splits |
+| `cmd+1`..`cmd+9` | Go to tab N |
+| `cmd+t` / `cmd+w` | New tab / close pane |
+| `cmd+enter` | Zoom the current split |
+| `cmd+backspace` | Delete the whole line (sends `ctrl+u`) |
+
+It sets `TERM=xterm-256color` so ssh hosts without kitty's terminfo work and the
+true-colour override in `tmux.conf` applies. `macos_option_as_alt` is on, so the
+Alt+arrow pane bindings in tmux work. Note `opt+cmd+\|` is `alt+super+i` on a
+Nordic layout, which is how it is mapped.

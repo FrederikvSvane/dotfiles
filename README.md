@@ -75,7 +75,7 @@ single inline `git diff`. Without delta installed, git falls back to plain `less
 
 ## kitty
 
-Catppuccin mocha, MesloLGS NF 13, block cursor, tabs on the bottom. Installed to
+Catppuccin mocha, MesloLGS NF 13, block cursor, tabs on top. Installed to
 `~/.config/kitty/kitty.conf` only when kitty is present. `cmd+shift+r` reloads it.
 
 | Key | Action |

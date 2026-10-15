@@ -70,44 +70,6 @@ Dragging with the mouse selects and copies to the system clipboard (OSC 52, so i
 also works over ssh in terminals that allow it). On macOS Terminal.app, Alt+arrows
 need "Use Option as Meta key" enabled.
 
-## Jupyter notebooks (in the terminal)
-
-`.ipynb` files open in nvim as markdown (jupytext); code blocks run on a Jupyter
-kernel through molten.nvim, and plots render inline via image.nvim and the kitty
-graphics protocol. Works over ssh, with or without root.
-
-| Key (`<localleader>`) | Action |
-|---|---|
-| `mi` | Start a kernel for this buffer |
-| `rc` | Run the code block under the cursor |
-| `rl` / `r` (visual) | Run line / selection |
-| `rr` | Re-run the current cell |
-| `ro` / `mh` | Open / hide the output window |
-| `mx` / `md` | Interrupt kernel / delete cell output |
-| `mp` | Play the gif or video path under the cursor |
-
-Try `notebooks/smoke-test.ipynb`: a static plot and an animation rendered to `wave.gif`.
-
-What `setup.sh` provides, all per-user (no root needed):
-
-- **Python host** at `~/.local/share/nvim/python-host` (pynvim, jupyter_client,
-  ipykernel, matplotlib, numpy, jupytext), created with [uv](https://github.com/astral-sh/uv),
-  which also fetches its own Python. Add packages with
-  `uv pip install --python ~/.local/share/nvim/python-host/bin/python <pkg>`.
-- **ImageMagick**: from the package manager with root, otherwise a conda-forge
-  build installed with micromamba into `~/.local/share/imagemagick`.
-- **kitten** (kitty's helper) in `~/.local/bin`, so `kitten icat` works on the server.
-
-Animations: a notebook output cannot play video, so save a gif and view it with
-`kitten icat --loop=-1 --hold wave.gif` (also works inside tmux and over ssh), or
-press `<localleader>mp` on the filename. mp4 needs `mpv --vo=kitty` and only works
-locally, outside tmux.
-
-Requirements on the machine you sit at: a terminal speaking the kitty graphics
-protocol (kitty, WezTerm, Ghostty). On the server, tmux must be >= 3.3 for images
-to pass through (`allow-passthrough` is set in `tmux.conf`); without tmux, or with
-older tmux, run nvim outside it. Nested tmux (local and remote) does not pass images.
-
 ## Git diffs (delta)
 
 `git diff`, `git show` and `git log -p` go through [delta](https://github.com/dandavison/delta),

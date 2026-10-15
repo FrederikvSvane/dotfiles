@@ -116,18 +116,16 @@ if [ "$MODE" = root ]; then
     if command -v apt-get >/dev/null 2>&1; then
         $SUDO apt-get update -qq
         $SUDO apt-get install -y zsh git curl screen tmux ripgrep fd-find fzf build-essential unzip
-        $SUDO apt-get install -y imagemagick 2>/dev/null || true
         $SUDO apt-get install -y lazygit git-delta 2>/dev/null || true
         $SUDO apt-get install -y gh 2>/dev/null || echo "gh not in apt repos; install manually: https://github.com/cli/cli/blob/trunk/docs/install_linux.md"
     elif command -v dnf >/dev/null 2>&1; then
         $SUDO dnf install -y zsh git curl screen tmux ripgrep fd-find fzf gcc make unzip
-        $SUDO dnf install -y ImageMagick 2>/dev/null || true
         $SUDO dnf install -y git-delta 2>/dev/null || true
         $SUDO dnf install -y gh 2>/dev/null || echo "gh not in dnf repos; install manually"
     elif command -v pacman >/dev/null 2>&1; then
-        $SUDO pacman -S --needed --noconfirm zsh git curl screen tmux github-cli neovim ripgrep fd fzf lazygit git-delta base-devel unzip imagemagick
+        $SUDO pacman -S --needed --noconfirm zsh git curl screen tmux github-cli neovim ripgrep fd fzf lazygit git-delta base-devel unzip
     elif command -v brew >/dev/null 2>&1; then
-        brew install zsh gh screen tmux neovim ripgrep fd fzf lazygit git-delta imagemagick
+        brew install zsh gh screen tmux neovim ripgrep fd fzf lazygit git-delta
     else
         echo "No supported package manager found. Install zsh, git, curl, screen, tmux, and gh yourself, then re-run." >&2
         exit 1
@@ -233,79 +231,6 @@ if command -v kitty >/dev/null 2>&1 || [ -d "/Applications/kitty.app" ] || [ -d 
     fetch_config kitty/kitty.conf ".config/kitty/kitty.conf"
 fi
 
-# --- jupyter in the terminal (molten.nvim + image.nvim) ----------------------
-# nvim runs notebooks through a dedicated python venv, plus ImageMagick (image
-# resizing) and kitten (animations over ssh). All of it works without root.
-PY_HOST="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/python-host"
-MAGICK_PREFIX="${XDG_DATA_HOME:-$HOME/.local/share}/imagemagick"
-
-# uv: single binary, also fetches its own python, so no system python/venv needed.
-install_uv() {
-    command -v uv >/dev/null 2>&1 && return 0
-    log "Installing uv"
-    curl -fsSL https://astral.sh/uv/install.sh | UV_NO_MODIFY_PATH=1 INSTALLER_NO_MODIFY_PATH=1 sh >/dev/null 2>&1 || true
-    command -v uv >/dev/null 2>&1
-}
-
-install_python_host() {
-    if "$PY_HOST/bin/python" -c "import pynvim, jupyter_client, ipykernel, jupytext" >/dev/null 2>&1; then
-        log "nvim python host already set up"
-        return 0
-    fi
-    install_uv || { echo "uv install failed; skipping the nvim python host (notebooks will not run)."; return 1; }
-    log "Creating nvim python host ($PY_HOST)"
-    mkdir -p "$(dirname "$PY_HOST")"
-    uv venv -q "$PY_HOST" &&
-        uv pip install -q --python "$PY_HOST/bin/python" \
-            pynvim jupyter_client ipykernel nbformat jupytext pillow pyperclip matplotlib numpy &&
-        "$PY_HOST/bin/python" -m ipykernel install --user --name python3 --display-name "Python 3 (nvim host)" >/dev/null 2>&1 &&
-        mkdir -p "$("$PY_HOST/bin/jupyter" --runtime-dir)" ||
-        { echo "python host install failed; notebooks will not run."; return 1; }
-}
-
-# ImageMagick without root: conda-forge build via micromamba (static binary), any arch.
-install_magick_user() {
-    case "$(uname -s)-$(uname -m)" in
-        Linux-x86_64)               mm=linux-64 ;;
-        Linux-aarch64|Linux-arm64)  mm=linux-aarch64 ;;
-        Darwin-arm64)               mm=osx-arm64 ;;
-        Darwin-x86_64)              mm=osx-64 ;;
-        *) echo "No ImageMagick fallback for $(uname -sm); inline images need magick or convert."; return 1 ;;
-    esac
-    log "Installing ImageMagick to $MAGICK_PREFIX (no root)"
-    tmp="$(mktemp -d)"
-    curl -fsSL "https://github.com/mamba-org/micromamba-releases/releases/latest/download/micromamba-$mm" -o "$tmp/micromamba" &&
-        chmod +x "$tmp/micromamba" || { rm -rf "$tmp"; return 1; }
-    MAMBA_ROOT_PREFIX="$tmp/root" "$tmp/micromamba" create -y -q -p "$MAGICK_PREFIX" \
-        -c conda-forge --override-channels imagemagick || { rm -rf "$tmp"; return 1; }
-    rm -rf "$tmp"
-    mkdir -p "$HOME/.local/bin"
-    for t in magick identify convert; do
-        [ -x "$MAGICK_PREFIX/bin/$t" ] && ln -sf "$MAGICK_PREFIX/bin/$t" "$HOME/.local/bin/$t"
-    done
-}
-
-install_kitten() { # kitty's standalone helper: icat animates gifs / shows images over ssh
-    command -v kitten >/dev/null 2>&1 && return 0
-    case "$(uname -s)-$(uname -m)" in
-        Linux-x86_64)               k=kitten-linux-amd64 ;;
-        Linux-aarch64|Linux-arm64)  k=kitten-linux-arm64 ;;
-        *) return 0 ;;
-    esac
-    log "Installing kitten"
-    mkdir -p "$HOME/.local/bin"
-    curl -fsSL "https://github.com/kovidgoyal/kitty/releases/latest/download/$k" -o "$HOME/.local/bin/kitten" &&
-        chmod +x "$HOME/.local/bin/kitten" || { rm -f "$HOME/.local/bin/kitten"; echo "kitten install failed (optional)."; }
-}
-
-install_python_host || true
-if command -v magick >/dev/null 2>&1 || command -v convert >/dev/null 2>&1; then
-    log "ImageMagick already installed"
-else
-    install_magick_user || echo "ImageMagick not installed: nvim notebooks will run but plots will not render inline."
-fi
-install_kitten
-
 # --- nvim config (LazyVim + catppuccin) -------------------------------------
 # A whole directory, so clone the repo instead of fetching file by file.
 NVIM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
@@ -333,8 +258,6 @@ if git clone --depth=1 https://github.com/FrederikvSvane/dotfiles.git "$tmp/dotf
         else
             echo "Plugin install did not finish (log: $NVIM_LOG); it will complete on first nvim launch."
         fi
-        # molten.nvim is a python remote plugin: register it against the python host.
-        nvim --headless "+Lazy! load molten-nvim" +UpdateRemotePlugins +qa >>"$NVIM_LOG" 2>&1 </dev/null || true
     fi
 else
     echo "Could not clone dotfiles; skipping nvim config."
@@ -375,6 +298,4 @@ echo "  1. Run 'gh auth login' so the git credential helper works."
 echo "  2. If the prompt shows broken symbols, install the MesloLGS NF font in the"
 echo "     terminal you are connecting FROM: https://github.com/romkatv/powerlevel10k#fonts"
 echo "  3. Install a Nerd Font (e.g. JetBrainsMono Nerd Font) in your terminal for nvim icons."
-echo "  4. Notebooks: open a .ipynb in nvim, <localleader>mi starts a kernel, <localleader>rc runs a cell."
-echo "     Images need a terminal with the kitty graphics protocol (kitty, WezTerm, Ghostty)."
-echo "  5. Log out and back in (or run 'exec zsh') to start using zsh."
+echo "  4. Log out and back in (or run 'exec zsh') to start using zsh."

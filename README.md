@@ -59,6 +59,10 @@ is still `Ctrl-b`.
 | `Alt` + arrows | Move between panes, no prefix |
 | `Shift` + left/right | Previous / next window, no prefix |
 | `prefix` `H J K L` | Resize panes |
+| `Alt` + `t` / `w` | New window (current directory) / close pane, no prompt |
+| `Alt` + `1`..`9` | Go to window N |
+| `Alt` + `Shift` + `t` | Rename window |
+| `prefix` `Tab` | Last window |
 | `prefix` `Enter` | Copy mode (vi keys; `v` select, `y` copy) |
 | `prefix` `r` | Reload config |
 

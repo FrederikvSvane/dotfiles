@@ -25,6 +25,16 @@ next_tab = "ctrl+shift+right"
 previous_agent = "ctrl+shift+up"
 next_agent = "ctrl+shift+down"
 
+# window management, same shape as kitty (cmd+t) and tmux (alt+t): ctrl+alt+letter.
+# Letters avoid Rectangle's shortcuts, tmux's alt bindings and readline/nvim.
+# (ctrl+shift+letter cannot work: a terminal sends it as plain ctrl+letter.)
+new_tab = "ctrl+alt+o"
+rename_tab = "ctrl+alt+r"
+close_pane = "ctrl+alt+w"
+split_vertical = "ctrl+alt+v"
+split_horizontal = "ctrl+alt+s"
+zoom = "ctrl+alt+z"
+
 # workspaces: j/k to match the sidebar's up/down
 next_workspace = "prefix+shift+j"
 previous_workspace = "prefix+shift+k"

@@ -109,6 +109,8 @@ Config in `herdr/config.toml`. herdr usually runs inside tmux, and tmux owns
 | `Ctrl+Shift` + left/right | Previous / next tab, no prefix |
 | `Ctrl+Shift` + up/down | Previous / next agent, no prefix |
 | `prefix` `Shift+j` / `Shift+k` | Next / previous workspace |
+| `Ctrl+Alt` + `o` / `r` / `w` | New tab / rename tab / close pane |
+| `Ctrl+Alt` + `v` / `s` / `z` | Split vertically / split horizontally / zoom pane |
 | `prefix` `g` | Session navigator |
 
 The `Ctrl+Shift+arrows` chords need kitty to pass them through (see `kitty.conf`).

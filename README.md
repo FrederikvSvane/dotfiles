@@ -87,7 +87,7 @@ Catppuccin mocha, MesloLGS NF 13, block cursor, tabs on top. Installed to
 |---|---|
 | `opt+cmd+\|` / `opt+cmd+-` | Split vertically / horizontally (current directory) |
 | `cmd+d` / `cmd+shift+d` | Same splits, iTerm style |
-| `cmd+alt+` arrows | tmux pane moves when the window runs tmux/ssh/mosh (sent as `Ctrl+Alt+arrows`), else kitty splits; decided by `arrow_pass.py` |
+| `cmd+alt+` arrows | Move between panes: tmux/herdr panes (sent as `Ctrl+Alt+arrows`), else kitty splits. A kitty split beside an ssh window always wins; see `arrow_pass.py` |
 | `cmd+1`..`cmd+9` | Go to tab N |
 | `cmd+t` / `cmd+w` | New tab / close pane |
 | `cmd+enter` | Zoom the current split |

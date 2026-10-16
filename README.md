@@ -86,7 +86,8 @@ Catppuccin mocha, MesloLGS NF 13, block cursor, tabs on top. Installed to
 |---|---|
 | `opt+cmd+\|` / `opt+cmd+-` | Split vertically / horizontally (current directory) |
 | `cmd+d` / `cmd+shift+d` | Same splits, iTerm style |
-| `cmd+alt+` arrows | Move between kitty splits; in a window running tmux or ssh, move tmux panes instead |
+| `cmd+alt+` arrows | Sent to the program in the window as `Ctrl+Alt+arrows` (tmux pane moves, also over ssh) |
+| `ctrl+cmd+` arrows | Move between kitty splits |
 | `cmd+1`..`cmd+9` | Go to tab N |
 | `cmd+t` / `cmd+w` | New tab / close pane |
 | `cmd+enter` | Zoom the current split |

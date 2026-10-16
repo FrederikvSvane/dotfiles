@@ -1,0 +1,34 @@
+onboarding = false
+
+[ui.toast]
+delivery = "off"
+
+[ui.sound]
+enabled = true
+
+[ui]
+status_indicators = "symbols"
+
+# herdr runs inside tmux here, and tmux owns ctrl+b and the Alt chords
+# (Alt+1..9, Alt+arrows, Alt+t/w), so herdr uses its own prefix and keeps the
+# follow-up keys to plain letters that tmux never sees.
+[keys]
+prefix = "ctrl+g"
+
+# No-prefix hotkeys, one modifier family per layer of the stack:
+#   kitty: cmd+alt+arrows   tmux: alt+arrows / shift+arrows   herdr: ctrl+shift+arrows
+# (ctrl+alt+arrows is taken by Rectangle, ctrl+arrows by Mission Control)
+# tabs: left/right, like tmux's shift+arrows for windows
+previous_tab = "ctrl+shift+left"
+next_tab = "ctrl+shift+right"
+# agents: up/down through the agent list (prefix+g still opens the navigator)
+previous_agent = "ctrl+shift+up"
+next_agent = "ctrl+shift+down"
+
+# workspaces: j/k to match the sidebar's up/down
+next_workspace = "prefix+shift+j"
+previous_workspace = "prefix+shift+k"
+
+# tabs keep the defaults: prefix+n / prefix+p, prefix+1..9
+# panes keep the defaults: prefix+h/j/k/l, prefix+tab to cycle (no free modifier
+# family is left for a fourth set of arrows)

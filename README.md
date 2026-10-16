@@ -17,7 +17,8 @@ The script:
 4. Installs Neovim (>= 0.11) plus ripgrep, fd, lazygit and delta for LazyVim and git. With root
    it uses the package manager and `/opt/nvim`; without root everything goes to
    `~/.local`.
-5. Downloads `.zshrc`, `.p10k.zsh`, `.gitconfig`, `.screenrc`, and `.tmux.conf` from this repo, plus
+5. Installs [herdr](https://herdr.dev) (to `~/.local/bin`, no root) and downloads `.zshrc`, `.p10k.zsh`,
+   `.gitconfig`, `.screenrc`, `.tmux.conf` and `~/.config/herdr/config.toml` from this repo, plus
    `~/.config/kitty/kitty.conf` when kitty is installed. Existing files are backed up first (`.bak.<timestamp>`).
 6. Installs the LazyVim + Catppuccin config from `nvim/` to `~/.config/nvim`
    and restores the plugins pinned in `lazy-lock.json`.
@@ -97,3 +98,18 @@ It sets `TERM=xterm-256color` so ssh hosts without kitty's terminfo work and the
 true-colour override in `tmux.conf` applies. `macos_option_as_alt` is on, so the
 Alt+arrow pane bindings in tmux work. Note `opt+cmd+\|` is `alt+super+i` on a
 Nordic layout, which is how it is mapped.
+
+## herdr
+
+Config in `herdr/config.toml`. herdr usually runs inside tmux, and tmux owns
+`ctrl+b` and the Alt chords, so herdr uses its own prefix (`ctrl+g`).
+
+| Key | Action |
+|---|---|
+| `Ctrl+Shift` + left/right | Previous / next tab, no prefix |
+| `Ctrl+Shift` + up/down | Previous / next agent, no prefix |
+| `prefix` `Shift+j` / `Shift+k` | Next / previous workspace |
+| `prefix` `g` | Session navigator |
+
+The `Ctrl+Shift+arrows` chords need kitty to pass them through (see `kitty.conf`).
+After editing the config, run `herdr server reload-config`.

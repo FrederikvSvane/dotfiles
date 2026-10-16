@@ -231,6 +231,18 @@ if command -v kitty >/dev/null 2>&1 || [ -d "/Applications/kitty.app" ] || [ -d 
     fetch_config kitty/kitty.conf ".config/kitty/kitty.conf"
 fi
 
+# --- herdr (terminal workspace manager for coding agents) --------------------
+# Official installer: checksum-verified binary into ~/.local/bin, no root needed.
+if command -v herdr >/dev/null 2>&1; then
+    log "herdr already installed"
+else
+    log "Installing herdr"
+    curl -fsSL https://herdr.dev/install.sh | sh || echo "herdr install failed; see https://herdr.dev/docs/install/"
+fi
+fetch_config herdr/config.toml .config/herdr/config.toml
+# a running herdr server keeps its old keys until told to reload
+command -v herdr >/dev/null 2>&1 && herdr server reload-config >/dev/null 2>&1 || true
+
 # --- nvim config (LazyVim + catppuccin) -------------------------------------
 # A whole directory, so clone the repo instead of fetching file by file.
 NVIM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"

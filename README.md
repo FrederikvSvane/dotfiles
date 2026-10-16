@@ -92,6 +92,7 @@ Catppuccin mocha, MesloLGS NF 13, block cursor, tabs on top. Installed to
 | `cmd+t` / `cmd+w` | New tab / close pane |
 | `cmd+enter` | Zoom the current split |
 | `cmd+backspace` | Delete the whole line (sends `ctrl+u`) |
+| `cmd+left` / `cmd+right` | Start / end of line (sends Home / End) |
 
 It sets `TERM=xterm-256color` so ssh hosts without kitty's terminfo work and the
 true-colour override in `tmux.conf` applies. `macos_option_as_alt` is on, so the

@@ -149,3 +149,7 @@ diffmode() {
   esac
 }
 gdi() { DELTA_FEATURES=inline git diff "$@"; }
+
+# herdr: ta runs claude inside the twig sandbox container, so herdr cannot see the
+# claude process from outside. HERDR_AGENT tells it which agent is behind the wrapper.
+ta() { if [ "$1" = claude ] && [ -n "$HERDR_ENV" ]; then HERDR_AGENT=claude command ta "$@"; else command ta "$@"; fi }

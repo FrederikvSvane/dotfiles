@@ -18,7 +18,7 @@ SEQUENCES = {
     'up': b'\x1b[1;7A',
     'down': b'\x1b[1;7B',
 }
-PASS_THROUGH = {'tmux', 'ssh', 'mosh', 'mosh-client'}
+PASS_THROUGH = {'tmux', 'herdr', 'ssh', 'mosh', 'mosh-client'}
 # the neighboring_window action accepts up/down, but Tab.neighboring_window wants top/bottom
 EDGES = {'left': 'left', 'right': 'right', 'up': 'top', 'down': 'bottom'}
 

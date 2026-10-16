@@ -101,17 +101,29 @@ Nordic layout, which is how it is mapped.
 
 ## herdr
 
-Config in `herdr/config.toml`. herdr usually runs inside tmux, and tmux owns
-`ctrl+b` and the Alt chords, so herdr uses its own prefix (`ctrl+g`).
+Config in `herdr/config.toml`. It mirrors `tmux.conf`: same prefix (`ctrl+b`), same
+keys, so there is one set to remember. Run herdr directly, never inside tmux (tmux
+would swallow `ctrl+b` and the Alt chords).
 
 | Key | Action |
 |---|---|
-| `Ctrl+Shift` + left/right | Previous / next tab, no prefix |
-| `Ctrl+Shift` + up/down | Previous / next agent, no prefix |
-| `prefix` `Shift+j` / `Shift+k` | Next / previous workspace |
-| `Ctrl+Alt` + `o` / `r` / `w` | New tab / rename tab / close pane |
-| `Ctrl+Alt` + `v` / `s` / `z` | Split vertically / split horizontally / zoom pane |
-| `prefix` `g` | Session navigator |
+| `Alt+t` / `prefix` `c` | New tab |
+| `Alt+w` / `prefix` `x` | Close pane |
+| `Alt+Shift+t` / `prefix` `,` | Rename tab |
+| `prefix` `&` | Close tab |
+| `Alt+1`..`9` / `prefix` `1`..`9` | Go to tab N |
+| `Shift+` left/right / `prefix` `p`/`n` | Previous / next tab |
+| `prefix` `<` / `>` | Move tab |
+| `prefix` `\|` / `-` | Split vertically / horizontally |
+| `prefix` `h` `j` `k` `l`, `cmd+opt+arrows` | Move between panes |
+| `prefix` `Shift+h/j/k/l` | Resize panes |
+| `prefix` `r` | Reload config |
+| `prefix` `d` / `prefix` `q` | Detach |
+| `prefix` `Enter` / `e` | Open scrollback in `$EDITOR` |
+| `Ctrl+Shift` + up/down | Previous / next agent |
+| `prefix` `w` / `g` | Workspace picker / jump anywhere |
 
-The `Ctrl+Shift+arrows` chords need kitty to pass them through (see `kitty.conf`).
-After editing the config, run `herdr server reload-config`.
+`cmd+opt+arrows` reach herdr as `Ctrl+Alt+arrows` via kitty (`arrow_pass.py`), and the
+`Ctrl+Shift+arrows` need kitty's passthrough in `kitty.conf`. There is no vi copy mode
+or "last window" key. After editing the config, run `herdr server reload-config`.
+

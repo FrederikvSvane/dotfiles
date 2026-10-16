@@ -1,44 +1,67 @@
 onboarding = false
 
+# herdr replaces tmux here, so this mirrors tmux.conf: the same prefix (ctrl+b),
+# the same single-key actions, and the same no-prefix Alt/Shift/ctrl+alt chords.
+# herdr is never started inside tmux (tmux would swallow ctrl+b and the Alt chords).
+
+[theme]
+name = "catppuccin"
+
+[ui]
+status_indicators = "symbols"
+# tmux: status bar on top, hostname and clock on the right, windows created at once
+tab_bar_position = "top"
+tab_bar_right = [
+  { type = "zoom" },
+  { type = "hostname" },
+  { type = "datetime", format = "%a %d %b  %H:%M" },
+]
+tab_bar_right_separator = "  "
+prompt_new_tab_name = false
+
 [ui.toast]
 delivery = "off"
 
 [ui.sound]
 enabled = true
 
-[ui]
-status_indicators = "symbols"
-
-# herdr runs inside tmux here, and tmux owns ctrl+b and the Alt chords
-# (Alt+1..9, Alt+arrows, Alt+t/w), so herdr uses its own prefix and keeps the
-# follow-up keys to plain letters that tmux never sees.
 [keys]
-prefix = "ctrl+g"
+# tabs are tmux windows
+new_tab = ["prefix+c", "alt+t"]
+rename_tab = ["prefix+comma", "alt+shift+t"]
+close_tab = "prefix+ampersand"
+previous_tab = ["prefix+p", "shift+left"]
+next_tab = ["prefix+n", "shift+right"]
+switch_tab = ["prefix+1..9", "alt+1..9"]
+move_tab_previous = "prefix+<"
+move_tab_next = "prefix+>"
 
-# No-prefix hotkeys, one modifier family per layer of the stack:
-#   kitty: cmd+alt+arrows   tmux: alt+arrows / shift+arrows   herdr: ctrl+shift+arrows
-# (ctrl+alt+arrows is taken by Rectangle, ctrl+arrows by Mission Control)
-# tabs: left/right, like tmux's shift+arrows for windows
-previous_tab = "ctrl+shift+left"
-next_tab = "ctrl+shift+right"
-# agents: up/down through the agent list (prefix+g still opens the navigator)
-previous_agent = "ctrl+shift+up"
+# panes: prefix | and - split, hjkl move, ctrl+alt+arrows move (kitty sends them
+# for cmd+opt+arrows), alt+w closes without a prompt
+split_vertical = ["prefix+v", "prefix+|"]
+split_horizontal = "prefix+minus"
+close_pane = ["prefix+x", "alt+w"]
+focus_pane_left = ["prefix+h", "ctrl+alt+left"]
+focus_pane_down = ["prefix+j", "ctrl+alt+down"]
+focus_pane_up = ["prefix+k", "ctrl+alt+up"]
+focus_pane_right = ["prefix+l", "ctrl+alt+right"]
+# tmux resizes with prefix+Shift+hjkl, so swapping panes (herdr's default there) is unbound
+resize_pane_left = "prefix+shift+h"
+resize_pane_down = "prefix+shift+j"
+resize_pane_up = "prefix+shift+k"
+resize_pane_right = "prefix+shift+l"
+swap_pane_left = ""
+swap_pane_down = ""
+swap_pane_up = ""
+swap_pane_right = ""
+# tmux: prefix+r reloads the config
+reload_config = "prefix+r"
+resize_mode = "prefix+shift+r"
+# tmux: prefix+d detaches, prefix+Enter is copy mode (herdr opens the scrollback in $EDITOR)
+detach = ["prefix+q", "prefix+d"]
+edit_scrollback = ["prefix+e", "prefix+enter"]
+
+# not in tmux: agents (ctrl+shift+arrows need kitty's passthrough); workspaces use
+# the defaults, prefix+w for the picker and prefix+g to jump anywhere
 next_agent = "ctrl+shift+down"
-
-# window management, same shape as kitty (cmd+t) and tmux (alt+t): ctrl+alt+letter.
-# Letters avoid Rectangle's shortcuts, tmux's alt bindings and readline/nvim.
-# (ctrl+shift+letter cannot work: a terminal sends it as plain ctrl+letter.)
-new_tab = "ctrl+alt+o"
-rename_tab = "ctrl+alt+r"
-close_pane = "ctrl+alt+w"
-split_vertical = "ctrl+alt+v"
-split_horizontal = "ctrl+alt+s"
-zoom = "ctrl+alt+z"
-
-# workspaces: j/k to match the sidebar's up/down
-next_workspace = "prefix+shift+j"
-previous_workspace = "prefix+shift+k"
-
-# tabs keep the defaults: prefix+n / prefix+p, prefix+1..9
-# panes keep the defaults: prefix+h/j/k/l, prefix+tab to cycle (no free modifier
-# family is left for a fourth set of arrows)
+previous_agent = "ctrl+shift+up"

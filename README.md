@@ -56,7 +56,7 @@ is still `Ctrl-b`.
 | Key | Action |
 |---|---|
 | `prefix` `\|` / `-` | Split right / down (keeps current directory) |
-| `Alt` + arrows | Move between panes, no prefix |
+| `Ctrl+Alt` + arrows | Move between panes, no prefix (kitty sends these for `cmd+opt+arrows`) |
 | `Shift` + left/right | Previous / next window, no prefix |
 | `prefix` `H J K L` | Resize panes |
 | `Alt` + `t` / `w` | New window (current directory) / close pane, no prompt |
@@ -67,8 +67,8 @@ is still `Ctrl-b`.
 | `prefix` `r` | Reload config |
 
 Dragging with the mouse selects and copies to the system clipboard (OSC 52, so it
-also works over ssh in terminals that allow it). On macOS Terminal.app, Alt+arrows
-need "Use Option as Meta key" enabled.
+also works over ssh in terminals that allow it). Plain Alt+arrows are left alone for
+word jumps. Outside kitty, bind `cmd+opt+arrows` (or any key) to send `Ctrl+Alt+arrows`.
 
 ## Git diffs (delta)
 
@@ -86,7 +86,7 @@ Catppuccin mocha, MesloLGS NF 13, block cursor, tabs on top. Installed to
 |---|---|
 | `opt+cmd+\|` / `opt+cmd+-` | Split vertically / horizontally (current directory) |
 | `cmd+d` / `cmd+shift+d` | Same splits, iTerm style |
-| `cmd+alt+` arrows | Move between splits |
+| `cmd+alt+` arrows | Move between kitty splits; in a window running tmux or ssh, move tmux panes instead |
 | `cmd+1`..`cmd+9` | Go to tab N |
 | `cmd+t` / `cmd+w` | New tab / close pane |
 | `cmd+enter` | Zoom the current split |

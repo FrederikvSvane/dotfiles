@@ -229,6 +229,7 @@ fetch_config tmux.conf .tmux.conf
 # its config dir already exists), never on a bare server.
 if command -v kitty >/dev/null 2>&1 || [ -d "/Applications/kitty.app" ] || [ -d "${XDG_CONFIG_HOME:-$HOME/.config}/kitty" ]; then
     fetch_config kitty/kitty.conf ".config/kitty/kitty.conf"
+    fetch_config kitty/arrow_pass.py ".config/kitty/arrow_pass.py"
 fi
 
 # --- herdr (terminal workspace manager for coding agents) --------------------

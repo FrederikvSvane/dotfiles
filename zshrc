@@ -77,6 +77,11 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+# other-writable / sticky dirs default to blue-on-green (or black-on-yellow),
+# unreadable in Catppuccin; plain bold blue instead. Before oh-my-zsh so the
+# completion menu (list-colors) picks it up too.
+export LS_COLORS="${LS_COLORS}:ow=1;34:tw=1;34:st=1;34"
+
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh

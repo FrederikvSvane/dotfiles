@@ -4,3 +4,7 @@
 
 -- Python: ty (Astral) for definitions/references/hover, ruff for lint/format. No pyright.
 vim.g.lazyvim_python_lsp = "ty"
+
+-- Absolute line numbers (LazyVim defaults to relative)
+vim.opt.number = true
+vim.opt.relativenumber = false

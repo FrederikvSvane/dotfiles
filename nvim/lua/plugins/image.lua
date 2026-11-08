@@ -35,14 +35,25 @@ return {
     opts = { image = { enabled = true } },
     init = function()
       local group = vim.api.nvim_create_augroup("image_reload", { clear = true })
+      -- The first enter follows snacks' own attach (which may still be converting the
+      -- image); re-attaching then would orphan its progress spinner. Only re-enters force.
+      local entered = {} ---@type table<number, boolean>
       vim.api.nvim_create_autocmd("BufEnter", {
         group = group,
         callback = function(ev)
+          local reenter = entered[ev.buf] == true
+          entered[ev.buf] = true
           vim.schedule(function()
             if vim.api.nvim_buf_is_valid(ev.buf) and ev.buf == vim.api.nvim_get_current_buf() then
-              reload(ev.buf, true)
+              reload(ev.buf, reenter)
             end
           end)
+        end,
+      })
+      vim.api.nvim_create_autocmd("BufWipeout", {
+        group = group,
+        callback = function(ev)
+          entered[ev.buf] = nil
         end,
       })
       vim.api.nvim_create_autocmd("FocusGained", {
